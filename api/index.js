@@ -32,10 +32,24 @@ mongoose.connection.on("connected",()=>{
 
 
 //middlewares
+
+app.use(express.json())
+
 app.use('/api/auth',authRoute)
 app.use('/api/users',usersRoute)
 app.use('/api/hotels',hotelsRoute)
 app.use('/api/room',roomsRoute)
+
+app.use((err,req,res,next)=>{
+    const errStatus = err.status || 500;
+    const errMessage = err.message || "something went wrong";
+    return res.status(errStatus).json({
+        success:false,
+        status:errStatus,
+        message:errMessage,
+        stack:err.stack
+    })
+})
 
 //server connecton
 app.listen(8800,()=>{
