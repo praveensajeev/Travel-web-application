@@ -15,3 +15,33 @@ export const verifyToken = (req,res,next)=>{
         next()
     })
 }
+
+
+
+
+//verify user 
+
+export const verifyUser = (req,res,next)=>{
+    verifyToken(req,res,next,()=>{
+        if(req.user.id === req.params.id || req.user.isAdmin){
+            next()
+        }else{
+             return next(createError(403,"Your are not authorized"))
+        }
+    })
+}
+
+
+
+
+//verify Admin 
+
+export const verifyAdmin = (req,res,next)=>{
+    verifyToken(req,res,next,()=>{
+        if(req.user.isAdmin){
+            next()
+        }else{
+             return next(createError(403,"Your are not authorized"))
+        }
+    })
+}
