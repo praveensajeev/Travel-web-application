@@ -12,16 +12,16 @@ export const updateUser = async (req,res,next)=>{
 }
 
 //delete User
-
 export const deleteUser = async (req,res,next)=>{
-    try{
-        await User.findById(req.params.id)
-       res.status(200).json("deleted successfully")
-    }catch(error){
-     next(error)
-    }
+  try {
+    
+    await User.findByIdAndDelete(req.params.id);
+    console.log(req.params.id)
+    res.status(200).json("User has been deleted.");
+  } catch (err) {
+    next(err);
+  }
 }
-
 //get One User
 
 export const getUser = async (req,res,next)=>{
@@ -35,12 +35,10 @@ export const getUser = async (req,res,next)=>{
 
 //get All Users
 export const getAllUsers = async (req,res,next)=>{
-
-
-    try{
-       const getAllUser = await User.find()
-       res.status(200).json(getAllUser)
-    }catch(error){
-     next(error)
+    try {
+      const users = await User.find();
+      res.status(200).json(users);
+    } catch (err) {
+      next(err);
     }
-}
+  }

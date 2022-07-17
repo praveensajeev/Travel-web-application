@@ -1,5 +1,5 @@
 import Hotel from '../models/hotelModel.js'
-
+import Room from '../models/roomModel.js'
 
 //create hotel
 export const createHotel = async (req,res,next)=>{
@@ -27,7 +27,7 @@ export const updateHotel = async (req,res,next)=>{
 
 export const deleteHotel = async (req,res,next)=>{
     try{
-        await Hotel.findById(req.params.id)
+        await Hotel.findByIdAndDelete(req.params.id)
        res.status(200).json("deleted successfully")
     }catch(error){
      next(error)
@@ -38,7 +38,7 @@ export const deleteHotel = async (req,res,next)=>{
 
 export const getHotel = async (req,res,next)=>{
     try{
-       const getHotel = await Hotel.findById(req.param.id)
+       const getHotel = await Hotel.findById(req.params.id)
        res.status(200).json(getHotel)
     }catch(error){
      next(error)
@@ -46,19 +46,18 @@ export const getHotel = async (req,res,next)=>{
 }
 
 //get All hotels
-export const getAllHotels = async (req,res,next)=>{
-     const {min,max,...others} = req.query;
-
-    try{
-       const getAllHotel = await Hotel.find({
+export const getAllHotels = async (req, res, next) => {
+    const { min, max, ...others } = req.query;
+    try {
+      const hotels = await Hotel.find({
         ...others,
-        cheapestPrice:{$gt:min | 1,$lt:max | 999},
-    }).limit(req.query.limit)
-       res.status(200).json(getAllHotel)
-    }catch(error){
-     next(error)
+        cheapestPrice: { $gt: min | 1, $lt: max || 999 },
+      }).limit(req.query.limit);
+      res.status(200).json(hotels);
+    } catch (err) {
+      next(err);
     }
-}
+  };
 //Count By City
 export const CountByCity = async (req,res,next)=>{
     const cities = req.query.cities.split(",")
@@ -95,3 +94,19 @@ export const countByType = async (req,res,next)=>{
 
     }
 }
+
+//selecting room
+
+export const getHotelRooms = async (req, res, next) => {
+  try {
+    const hotel = await Hotel.findById(req.params.id);
+    const list = await Promise.all(
+      hotel.rooms.map((room) => {
+        return Room.findById(room);
+      })
+    );
+    res.status(200).json(list)
+  } catch (err) {
+    next(err);
+  }
+};
